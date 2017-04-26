@@ -1,0 +1,18 @@
+cd C:\Users\Ivanovsky\Desktop\SO\Matrices Windows
+
+INSTRUCCIONES DE COMPILACION:
+gcc -c matrixop.c -Wall
+gcc -c matricesWindows.c -Wall
+gcc -c suma.c -Wall
+gcc -c resta.c -Wall
+gcc -c multiplicacion.c -Wall
+gcc -c transpuesta.c -Wall
+gcc -c inversa.c -Wall
+gcc -c lectura.c
+gcc matrixop.o suma.o -o suma.exe
+gcc matrixop.o resta.o -o resta.exe
+gcc matrixop.o multiplicacion.o -o multiplicacion.exe
+gcc matrixop.o transpuesta.o -o transpuesta.exe
+gcc matrixop.o inversa.o -o inversa.exe
+gcc matrixop.o lectura.o -o lectura.exe
+gcc matrixop.o matricesWindows.o -o matrices.exe
