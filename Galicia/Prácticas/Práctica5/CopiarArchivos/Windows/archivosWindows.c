@@ -42,23 +42,19 @@ int main (int argc, char **argv)
   scanf ("%s", dir->destino);
   manHilo = CreateThread (NULL, 0, hiloDirectorio, &(*dir), 0, &idHilo);	      //Creación del hilo
   WaitForSingleObject (manHilo, INFINITE);                                  //Esperamos la finalización del hilo
-  //printf ("\nOrigen (saliendo del hilo):\t %s\n", dir.origen);
-  //printf ("\nDestino (saliendo del hilo):\t %s\n", dir.destino);
   CloseHandle (manHilo);
   return 0;
 }
 
 DWORD WINAPI hiloDirectorio (LPVOID lpParam)
 {
-  DWORD  dwBytesRead, dwBytesWritten, dwPos, tipoArchivo, idHilo;
+  DWORD  dwBytesRead, dwBytesWritten, tipoArchivo, idHilo;
   BYTE   buffer[BUF_SIZE];
   HANDLE manHilo;                   //Manejador del hilo
   HANDLE input_fd, output_fd;             //Manejadores archivo de entrada y de salida
   directorios * direc = (directorios *)lpParam;         //Casteo de argumentos a tipo directorios
   DIR * dir;                            //Apuntador de tipo struct DIR
-  ssize_t ret_in, ret_out;               //Número de bytes regresados por read() y write()
   struct dirent *dirEntry;              //Apuntador de tipo struct dirent
-  struct stat inode;                    //Estructura de tipo struct stat
   char rutaOrigen[300], rutaDestino[300];
   dir = opendir (direc->origen);
   if (dir == 0)                     //Si hay error al abrir el directorio
@@ -119,18 +115,12 @@ DWORD WINAPI hiloDirectorio (LPVOID lpParam)
       //Comenzamos a copiar los archivos dentro de la ruta destino
       while (ReadFile(input_fd, buffer, sizeof(buffer), &dwBytesRead, NULL) && dwBytesRead > 0)         //Mientras haya bytes en el archivo abierto para lectura
       {
-        dwPos = SetFilePointer(output_fd, 0, NULL, FILE_END);
+        SetFilePointer(output_fd, 0, NULL, FILE_END);
         WriteFile(output_fd, buffer, dwBytesRead, &dwBytesWritten, NULL);
       }
+      CloseHandle (input_fd);
+      CloseHandle (output_fd);
     }
   }
   return 0;
 }
-
-
-
-
-/*printf("Directorio de origen:\t%s\n",direc->origen);
-printf("Directorio de destino:\t%s\n", direc->destino);
-strcpy(direc->origen, "Users/Joel_/Desktop/origen");
-strcpy(direc->destino, "Users/Joel_/Desktop/destino");*/
