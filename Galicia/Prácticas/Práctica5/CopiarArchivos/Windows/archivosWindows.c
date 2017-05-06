@@ -8,14 +8,14 @@
 #include <unistd.h>
 #include <string.h>
 #include <windows.h>
-#define BUF_SIZE 8192		// Se define un tamaño de búffer para la lectura de archivos
+#define BUF_SIZE 8192		//Definimos un tamaño de búffer para la lectura de archivos
 
 DWORD WINAPI hiloDirectorio (LPVOID lpParam);
 
-typedef struct Directorios     // Definición de la estructura de argumentos para la función del hilo
+typedef struct Directorios     //Definimos la estructura de argumentos para la función del hilo
 {
-  char origen[500];     // Ruta del directorio de origen
-  char destino[500];    // Ruta del directorio destino
+  char origen[500];     //Ruta del directorio de origen
+  char destino[500];    //Ruta del directorio destino
 }directorios;
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -50,12 +50,14 @@ int main (int argc, char **argv)
 
 DWORD WINAPI hiloDirectorio (LPVOID lpParam)
 {
-  directorios * direc = (directorios *)lpParam;
-  DIR * dir;
-  ssize_t ret_n, ret_out;
-  struct dirent *dirEntry;
-  struct stat inode;
-  char ruta[300], nuevaRuta[300], buffer[BUF_SIZE];
+  DWORD tipoArchivo;
+  HANDLE input_fd, output_fd;             //Manejadores archivo de entrada y de salida
+  directorios * direc = (directorios *)lpParam;         //Casteo de argumentos a tipo directorios
+  DIR * dir;                            //Apuntador de tipo struct DIR
+  ssize_t ret_n, ret_out;               //Número de bytes regresados por read() y write()
+  struct dirent *dirEntry;              //Apuntador de tipo struct dirent
+  struct stat inode;                    //Estructura de tipo struct stat
+  char rutaOrigen[300], rutaDestino[300], buffer[BUF_SIZE];
   dir = opendir (direc->origen);
   if (dir == 0)                     //Si hay error al abrir el directorio
   {
@@ -64,6 +66,15 @@ DWORD WINAPI hiloDirectorio (LPVOID lpParam)
   }else                             //Si se abre correctamente el directorio
   {
     printf("\nEl directorio '%s' se abri%c correctamente.\n",direc->origen, 162);
+  }
+  while ((dirEntry = readdir (dir)) != 0)           //Mientras haya contenido en el directorio
+  {
+    sprintf (rutaOrigen, "%s/%s", direc->origen, dirEntry->d_name);           //Guardamos la ruta de origen de cada entrada leída en rutaOrigen
+    tipoArchivo = GetFileAttributes (rutaOrigen);
+    if (tipoArchivo == FILE_ATTRIBUTE_ARCHIVE)          //Si es un archivo
+    {
+
+    }
   }
   return 0;
 }
