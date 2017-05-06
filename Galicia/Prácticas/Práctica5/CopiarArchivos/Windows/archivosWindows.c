@@ -52,6 +52,7 @@ DWORD WINAPI hiloDirectorio (LPVOID lpParam)
 {
   DWORD tipoArchivo, idHilo;
   HANDLE manHilo;                   //Manejador del hilo
+  //HFILE input_fd, output_fd;             //Manejadores archivo de entrada y de salida
   HANDLE input_fd, output_fd;             //Manejadores archivo de entrada y de salida
   directorios * direc = (directorios *)lpParam;         //Casteo de argumentos a tipo directorios
   DIR * dir;                            //Apuntador de tipo struct DIR
@@ -59,10 +60,11 @@ DWORD WINAPI hiloDirectorio (LPVOID lpParam)
   struct dirent *dirEntry;              //Apuntador de tipo struct dirent
   struct stat inode;                    //Estructura de tipo struct stat
   char rutaOrigen[300], rutaDestino[300], buffer[BUF_SIZE];
+  LPOFSTRUCT _buffer;
   dir = opendir (direc->origen);
   if (dir == 0)                     //Si hay error al abrir el directorio
   {
-    perror ("\nError al abrir el directorio");
+    perror ("\nError al abrir el directorio: ");
     exit(1);
   }else                             //Si se abre correctamente el directorio
   {
@@ -80,7 +82,7 @@ DWORD WINAPI hiloDirectorio (LPVOID lpParam)
       sprintf (direc2->destino, "%s/%s/", direc->destino, dirEntry->d_name);               //Almacenamos la nueva ruta de destino para el hilo
       if (dirEntry->d_name[0] != '.')               //Si no es un archivo oculto
       {
-        printf ("\nSe encontro el directorio: %s\n",direc2->origen);
+        printf ("\nSe encontr%c el directorio: %s\n", 162, direc2->origen);
         nuevoDir = mkdir (direc2->destino);      //Creamos el directorio en la carpeta destino
         if (nuevoDir != 0)
         {
@@ -94,6 +96,16 @@ DWORD WINAPI hiloDirectorio (LPVOID lpParam)
     }else if (tipoArchivo == FILE_ATTRIBUTE_ARCHIVE)
     {
       //printf("\nArchivo %s\n", dirEntry->d_name);
+      sprintf (rutaDestino, "%s/%s", direc->destino, dirEntry->d_name);         //Guardamos la ruta del archivo de origen
+      input_fd = CreateFile (rutaOrigen, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED, NULL);                   //Abrimos el archivo existente en modo lectura
+      if (input_fd == INVALID_HANDLE_VALUE)         //Si no se abre el archivo
+      {
+        perror("Error al abrir el archivo: ");
+        return 0;
+      }else             //Si no hay errores al abrir el archivo
+      {
+        printf("El archivo %s se abri%c correctamente.\n", rutaOrigen, 162);
+      }
     }
   }
   return 0;
