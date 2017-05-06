@@ -13,13 +13,22 @@
 
 DWORD WINAPI hiloDirectorio (LPVOID lpParam);
 
-struct Directorios    // Definición de la estructura de argumentos para la función del hilo
+typedef struct Directorios     // Definición de la estructura de argumentos para la función del hilo
 {
   char origen[500];     // Ruta del directorio de origen
   char destino[500];    // Ruta del directorio destino
-};
+}directorios;
 
-typedef struct  Directorios directorios;
+////////////////////////////////////////////////////////////////////////////////////////////
+////                                   archivosWindows.c                                ////
+////                                                                                    ////
+////                                                                                    ////
+//// Copiamos archivos de un directorio origen a un directorio destino, ambos definidos ////
+//// por el usuario, utilizando el manejo de hilos en C.                                ////
+////                                                                                    ////
+////                                                                                    ////
+//// Autor: Romero Gamarra Joel Mauricio                                                ////
+////////////////////////////////////////////////////////////////////////////////////////////
 
 int main (int argc, char **argv)
 {
