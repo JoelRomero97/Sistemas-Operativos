@@ -31,20 +31,21 @@ typedef struct Directorios     // Definición de la estructura de argumentos par
 
 int main (int argc, char **argv)
 {
-  	DWORD idHilo;		              //Identificador del hilo
-    HANDLE manHilo;                 //Manejador del hilo
-  	directorios dir;
-    printf ("Ejemplo de ruta: /home/NombreUsuario/Descargas/CarpetaCopiar\n");
-    printf ("Ingresa la ruta donde se encuentran los archivos a copiar:\t");
-    scanf ("%s", dir.origen);
-    printf ("\nIngresa la ruta donde se van a copiar los archivos:\t");
-    scanf ("%s", dir.destino);
-    manHilo = CreateThread (NULL, 0, hiloDirectorio, &dir, 0, &idHilo);	      //Creación del hilo
-    WaitForSingleObject (manHilo, INFINITE);
-    printf ("\nOrigen (saliendo del hilo):\t %s\n", dir.origen);
-    printf ("\nDestino (saliendo del hilo):\t %s\n", dir.destino);
-    CloseHandle (manHilo);
-    return 0;
+  system("cls");
+	DWORD idHilo;		              //Identificador del hilo
+  HANDLE manHilo;                 //Manejador del hilo
+	directorios dir;
+  printf ("Ejemplo de ruta: /Users/NombreUsuario/Desktop/CarpetaACopiar\n\n");
+  printf ("Ingresa la ruta donde se encuentran los archivos a copiar:\t");
+  scanf ("%s", dir.origen);
+  printf ("Ingresa la ruta donde se van a copiar los archivos:\t");
+  scanf ("%s", dir.destino);
+  manHilo = CreateThread (NULL, 0, hiloDirectorio, &dir, 0, &idHilo);	      //Creación del hilo
+  WaitForSingleObject (manHilo, INFINITE);
+  //printf ("\nOrigen (saliendo del hilo):\t %s\n", dir.origen);
+  //printf ("\nDestino (saliendo del hilo):\t %s\n", dir.destino);
+  CloseHandle (manHilo);
+  return 0;
 }
 
 DWORD WINAPI hiloDirectorio (LPVOID lpParam)
@@ -55,6 +56,15 @@ DWORD WINAPI hiloDirectorio (LPVOID lpParam)
   struct dirent *dirEntry;
   struct stat inode;
   char ruta[300], nuevaRuta[300], buffer[BUF_SIZE];
+  dir = opendir (direc->origen);
+  if (dir == 0)                     //Si hay error al abrir el directorio
+  {
+    perror ("\nError al abrir el directorio");
+    exit(1);
+  }else                             //Si se abre correctamente el directorio
+  {
+    printf("\nEl directorio '%s' se abri%c correctamente.\n",direc->origen, 162);
+  }
   return 0;
 }
 
