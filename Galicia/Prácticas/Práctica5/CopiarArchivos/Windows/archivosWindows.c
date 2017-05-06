@@ -50,17 +50,16 @@ int main (int argc, char **argv)
 
 DWORD WINAPI hiloDirectorio (LPVOID lpParam)
 {
-  DWORD tipoArchivo, idHilo;
+  DWORD  dwBytesRead, dwBytesWritten, dwPos, tipoArchivo, idHilo;
+  BYTE   buffer[BUF_SIZE];
   HANDLE manHilo;                   //Manejador del hilo
-  //HFILE input_fd, output_fd;             //Manejadores archivo de entrada y de salida
   HANDLE input_fd, output_fd;             //Manejadores archivo de entrada y de salida
   directorios * direc = (directorios *)lpParam;         //Casteo de argumentos a tipo directorios
   DIR * dir;                            //Apuntador de tipo struct DIR
-  ssize_t ret_n, ret_out;               //Número de bytes regresados por read() y write()
+  ssize_t ret_in, ret_out;               //Número de bytes regresados por read() y write()
   struct dirent *dirEntry;              //Apuntador de tipo struct dirent
   struct stat inode;                    //Estructura de tipo struct stat
-  char rutaOrigen[300], rutaDestino[300], buffer[BUF_SIZE];
-  LPOFSTRUCT _buffer;
+  char rutaOrigen[300], rutaDestino[300];
   dir = opendir (direc->origen);
   if (dir == 0)                     //Si hay error al abrir el directorio
   {
@@ -93,18 +92,35 @@ DWORD WINAPI hiloDirectorio (LPVOID lpParam)
         manHilo = CreateThread (NULL, 0, hiloDirectorio, &(*direc2), 0, &idHilo);       //Creación del hilo
         WaitForSingleObject (manHilo, INFINITE);                                  //Esperamos la finalización del hilo
       }
-    }else if (tipoArchivo == FILE_ATTRIBUTE_ARCHIVE)
+    }else if (tipoArchivo == FILE_ATTRIBUTE_ARCHIVE)                            //Si la entrada es un archivo
     {
       //printf("\nArchivo %s\n", dirEntry->d_name);
       sprintf (rutaDestino, "%s/%s", direc->destino, dirEntry->d_name);         //Guardamos la ruta del archivo de origen
-      input_fd = CreateFile (rutaOrigen, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED, NULL);                   //Abrimos el archivo existente en modo lectura
-      if (input_fd == INVALID_HANDLE_VALUE)         //Si no se abre el archivo
+      input_fd = CreateFile (rutaOrigen, GENERIC_READ, 0, NULL, OPEN_EXISTING, 
+                              FILE_ATTRIBUTE_NORMAL, NULL);         //Abrimos el archivo existente en modo lectura
+      if (input_fd == INVALID_HANDLE_VALUE)         //Si ocurre un error al abrir el archivo
       {
         perror("Error al abrir el archivo: ");
         return 0;
       }else             //Si no hay errores al abrir el archivo
       {
         printf("El archivo %s se abri%c correctamente.\n", rutaOrigen, 162);
+      }
+      output_fd = CreateFile(rutaDestino, FILE_APPEND_DATA, FILE_SHARE_READ, 
+                              NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);         //Creamos el archivo en modo escritura
+      if (output_fd == INVALID_HANDLE_VALUE)        //Si ocurre un error al abrir el archivo
+      {
+        perror("Error al crear el archivo: ");
+        return 0;
+      }else             //Si no hay errores al abrir el archivo
+      {
+        printf("El archivo %s se cre%c correctamente.\n", rutaDestino, 162);
+      }
+      //Comenzamos a copiar los archivos dentro de la ruta destino
+      while (ReadFile(input_fd, buffer, sizeof(buffer), &dwBytesRead, NULL) && dwBytesRead > 0)         //Mientras haya bytes en el archivo abierto para lectura
+      {
+        dwPos = SetFilePointer(output_fd, 0, NULL, FILE_END);
+        WriteFile(output_fd, buffer, dwBytesRead, &dwBytesWritten, NULL);
       }
     }
   }
