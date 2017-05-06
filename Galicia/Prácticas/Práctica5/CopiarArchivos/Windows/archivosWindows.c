@@ -34,14 +34,14 @@ int main (int argc, char **argv)
   system("cls");
 	DWORD idHilo;		              //Identificador del hilo
   HANDLE manHilo;                 //Manejador del hilo
-	directorios dir;
+	directorios * dir = (directorios *) malloc (sizeof (directorios));
   printf ("Ejemplo de ruta: /Users/NombreUsuario/Desktop/CarpetaACopiar\n\n");
   printf ("Ingresa la ruta donde se encuentran los archivos a copiar:\t");
-  scanf ("%s", dir.origen);
+  scanf ("%s", dir->origen);
   printf ("Ingresa la ruta donde se van a copiar los archivos:\t");
-  scanf ("%s", dir.destino);
-  manHilo = CreateThread (NULL, 0, hiloDirectorio, &dir, 0, &idHilo);	      //Creación del hilo
-  WaitForSingleObject (manHilo, INFINITE);
+  scanf ("%s", dir->destino);
+  manHilo = CreateThread (NULL, 0, hiloDirectorio, &(*dir), 0, &idHilo);	      //Creación del hilo
+  WaitForSingleObject (manHilo, INFINITE);                                  //Esperamos la finalización del hilo
   //printf ("\nOrigen (saliendo del hilo):\t %s\n", dir.origen);
   //printf ("\nDestino (saliendo del hilo):\t %s\n", dir.destino);
   CloseHandle (manHilo);
@@ -50,8 +50,8 @@ int main (int argc, char **argv)
 
 DWORD WINAPI hiloDirectorio (LPVOID lpParam)
 {
-  DWORD tipoArchivo, identificadorHilo;
-  HANDLE manejadorHilo;                   //Manejador del hilo
+  DWORD tipoArchivo, idHilo;
+  HANDLE manHilo;                   //Manejador del hilo
   HANDLE input_fd, output_fd;             //Manejadores archivo de entrada y de salida
   directorios * direc = (directorios *)lpParam;         //Casteo de argumentos a tipo directorios
   DIR * dir;                            //Apuntador de tipo struct DIR
@@ -72,26 +72,28 @@ DWORD WINAPI hiloDirectorio (LPVOID lpParam)
   {
     sprintf (rutaOrigen, "%s/%s", direc->origen, dirEntry->d_name);           //Guardamos la ruta de origen de cada entrada leída en rutaOrigen
     tipoArchivo = GetFileAttributes (rutaOrigen);
-    if (tipoArchivo == FILE_ATTRIBUTE_DIRECTORY)          //Si es un archivo
+    if (tipoArchivo == FILE_ATTRIBUTE_DIRECTORY)          //Si es un directorio
     {
       int nuevoDir;
-      directorios * dir = (directorios *) malloc (sizeof(directorios));
-      sprintf (dir->origen, "%s/", rutaOrigen);                 //Almacenamos la nueva ruta de origen para el hilo
-      sprintf (dir->destino, "%s/%s/", direc->destino, dirEntry->d_name);               //Almacenamos la nueva ruta de destino para el hilo
+      directorios * direc2 = (directorios *) malloc (sizeof (directorios));
+      sprintf (direc2->origen, "%s/", rutaOrigen);                 //Almacenamos la nueva ruta de origen para el hilo
+      sprintf (direc2->destino, "%s/%s/", direc->destino, dirEntry->d_name);               //Almacenamos la nueva ruta de destino para el hilo
       if (dirEntry->d_name[0] != '.')               //Si no es un archivo oculto
       {
-        printf ("\nSe encontro el directorio: %s\n",dir->origen);
-        nuevoDir = mkdir (dir->destino); // Creamos el directorio en la carpeta destino
+        printf ("\nSe encontro el directorio: %s\n",direc2->origen);
+        nuevoDir = mkdir (direc2->destino);      //Creamos el directorio en la carpeta destino
         if (nuevoDir != 0)
         {
           printf ("\nError al crear el directorio\n");
-          return 0;                       //Se cancela la ejecución del hilo
+          return 0;
         }
         printf ("Creando hilo para su ejecucion\n");
-
-        //pthread_create (&idThread, NULL, hiloDirectorio, (void *) directorios2);  // Creación del hilo
-        //pthread_join (idThread, NULL);          // Esperamos a la conclusión del hilo
+        manHilo = CreateThread (NULL, 0, hiloDirectorio, &(*direc2), 0, &idHilo);       //Creación del hilo
+        WaitForSingleObject (manHilo, INFINITE);                                  //Esperamos la finalización del hilo
       }
+    }else if (tipoArchivo == FILE_ATTRIBUTE_ARCHIVE)
+    {
+      //printf("\nArchivo %s\n", dirEntry->d_name);
     }
   }
   return 0;
