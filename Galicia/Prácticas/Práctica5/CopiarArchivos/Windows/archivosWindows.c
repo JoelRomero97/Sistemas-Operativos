@@ -8,7 +8,6 @@
 #include <unistd.h>
 #include <string.h>
 #include <windows.h>
-
 #define BUF_SIZE 8192		// Se define un tamaño de búffer para la lectura de archivos
 
 DWORD WINAPI hiloDirectorio (LPVOID lpParam);
@@ -34,15 +33,12 @@ int main (int argc, char **argv)
 {
   	DWORD idHilo;		              //Identificador del hilo
     HANDLE manHilo;                 //Manejador del hilo
-  	//struct Directorios * directorios = (struct Directorios *) malloc (sizeof (struct Directorios));	         // Estructura para argumentos del hilo
   	directorios dir;
     printf ("Ejemplo de ruta: /home/NombreUsuario/Descargas/CarpetaCopiar\n");
     printf ("Ingresa la ruta donde se encuentran los archivos a copiar:\t");
-    scanf ("%s", dir.origen);						// Guardamos la ruta de origen
-    //printf ("\nOrigen:\t %s\n", dir.origen);
+    scanf ("%s", dir.origen);
     printf ("\nIngresa la ruta donde se van a copiar los archivos:\t");
-    scanf ("%s", dir.destino);						// Guardamos la ruta destino
-    //printf ("\nDestino:\t %s\n", dir.destino);
+    scanf ("%s", dir.destino);
     manHilo = CreateThread (NULL, 0, hiloDirectorio, &dir, 0, &idHilo);	      //Creación del hilo
     WaitForSingleObject (manHilo, INFINITE);
     printf ("\nOrigen (saliendo del hilo):\t %s\n", dir.origen);
@@ -54,9 +50,18 @@ int main (int argc, char **argv)
 DWORD WINAPI hiloDirectorio (LPVOID lpParam)
 {
   directorios * direc = (directorios *)lpParam;
-  printf("Directorio de origen:\t%s\n",direc->origen);
-  printf("Directorio de destino:\t%s\n", direc->destino);
-  strcpy(direc->origen, "Users/Joel_/Desktop/origen");
-  strcpy(direc->destino, "Users/Joel_/Desktop/destino");
+  DIR * dir;
+  ssize_t ret_n, ret_out;
+  struct dirent *dirEntry;
+  struct stat inode;
+  char ruta[300], nuevaRuta[300], buffer[BUF_SIZE];
   return 0;
 }
+
+
+
+
+/*printf("Directorio de origen:\t%s\n",direc->origen);
+printf("Directorio de destino:\t%s\n", direc->destino);
+strcpy(direc->origen, "Users/Joel_/Desktop/origen");
+strcpy(direc->destino, "Users/Joel_/Desktop/destino");*/
