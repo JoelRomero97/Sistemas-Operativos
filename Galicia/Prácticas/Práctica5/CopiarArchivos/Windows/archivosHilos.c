@@ -1,4 +1,4 @@
-#include <sys/types.h>
+﻿#include <sys/types.h>
 #include <sys/stat.h>
 #include <dirent.h>
 #include <stdio.h>
@@ -81,7 +81,7 @@ DWORD WINAPI hiloDirectorio (LPVOID lpParam)
         nuevoDir = mkdir (direc2->destino);      //Creamos el directorio en la carpeta destino
         if (nuevoDir != 0)
         {
-          printf ("\nError al crear el directorio\n");
+          perror ("\nError al crear el directorio: ");
           return 0;
         }
         printf ("Creando hilo para su ejecucion\n");
@@ -90,7 +90,6 @@ DWORD WINAPI hiloDirectorio (LPVOID lpParam)
       }
     }else if (tipoArchivo == FILE_ATTRIBUTE_ARCHIVE)                            //Si la entrada es un archivo
     {
-      //printf("\nArchivo %s\n", dirEntry->d_name);
       sprintf (rutaDestino, "%s/%s", direc->destino, dirEntry->d_name);         //Guardamos la ruta del archivo de origen
       input_fd = CreateFile (rutaOrigen, GENERIC_READ, 0, NULL, OPEN_EXISTING, 
                               FILE_ATTRIBUTE_NORMAL, NULL);         //Abrimos el archivo existente en modo lectura

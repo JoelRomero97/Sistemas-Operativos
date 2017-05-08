@@ -8,19 +8,29 @@ void * hiloNivel2 (void *arg);
 void * hiloNivel3 (void *arg);
 void * hiloTerminal (void *arg);
 
-
+////////////////////////////////////////////////////////////////////////////////////////////
+////                                   	ArbolHilos.c 	                                ////
+////                                                                                    ////
+////                                                                                    ////
+//// Creación de árbol de 750 hilos en Windows, con 15 primeros hilos hijos de un 		////
+//// proceso hijo, cada uno de los 15 creará 10 hijos más, y cada uno de esos 10 creará ////
+//// los últimos 5 hijos. Los hijos terminales imprimen Práctica5 y los demás hilos 	////
+//// van a imprimir su identificador y su nivel.								        ////
+////                                                                                    ////
+////                                                                                    ////
+//// Autor: Romero Gamarra Joel Mauricio                                                ////
+////////////////////////////////////////////////////////////////////////////////////////////
 
 int main (void)
 {
-  int id_proc, status;
-  int i, j;
+  int id_proc, status, i;
   system("clear");
   printf("\n\n\n\tIDENTIFICADOR\t\t\tNIVEL\n\n");
   id_proc = fork ();
   if (id_proc == 0)										//Código del proceso hijo
   {
   	printf("\t%d\t\t\t\t1\t\t<- Proceso hijo\n", getpid());
-	pthread_t id_Hilo[15];
+	  pthread_t id_Hilo[15];
   	for (i = 0; i < 15; i++)
   	{
 	    pthread_create (&id_Hilo[i], NULL, (void *)hiloNivel2, NULL);		// Creación de los primeros 15 hilos
@@ -43,7 +53,7 @@ void * hiloNivel2 (void *arg)
 {
 	printf ("\t%lu\t\t\t2\n", pthread_self());
 	pthread_t id_Hilo[10];
-	int i, j;
+	int i;
   	for (i = 0; i < 10; i++)
   	{
     	pthread_create (&id_Hilo[i], NULL, (void *)hiloNivel3, NULL);				// Se crean los 10 hilos
@@ -59,7 +69,7 @@ void * hiloNivel3 (void *arg)
 {
 	printf ("\t%lu\t\t\t3\n", pthread_self());
 	pthread_t id_Hilo[5];
-	int i, j;
+	int i;
   	for (i = 0; i < 5; i++)
   	{
 	    pthread_create (&id_Hilo[i], NULL, (void *)hiloTerminal, NULL);			// Creación de los últimos 5 hilos
