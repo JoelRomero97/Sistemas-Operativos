@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <sys/wait.h>
 
 typedef struct Matrices		// Definición de la estructura de matrices
 {
@@ -12,6 +13,7 @@ typedef struct Matrices		// Definición de la estructura de matrices
 void crearMatrices (void *args, int n);
 void GenerarMatrices (int **m1, int **m2, int n);
 void ImprimirMatriz (int **m1, int x, int n);
+int ** SumaMatrices (int **m1, int **m2, int **m3, int n);
 
 ////////////////////////////////////////////////////////////////////////////////
 ////								Matrices.c 								////
@@ -28,37 +30,46 @@ void ImprimirMatriz (int **m1, int x, int n);
 
 int main (void)
 {
-	int i, j, n;
-	int desc_arch[2];					//Descriptor de archivo
+	int i, j, n, status;
+	int suma[2], mult[2];						//Descriptores de archivo
 	matrices * matriz = (matrices *) malloc (sizeof (matrices));
+	matrices * matrizSuma = (matrices *) malloc (sizeof (matrices));
+	matrices * matrizMult = (matrices *) malloc (sizeof (matrices));
 	system ("clear");
 	printf ("Digite el tamaño de la matriz:\t");
 	scanf ("%d",&n);
 	crearMatrices ((void *)matriz, n);
-	GenerarMatrices(matriz->m1, matriz->m2, n);
-	ImprimirMatriz(matriz->m1, 1, n);
-	ImprimirMatriz(matriz->m2, 2, n);
-	if (pipe (desc_arch) != 0)					//Creamos la tubería
-		exit(1);								//Salimos si ocurre un error en la creación
-
-
-
-
-
-
-	/*if (fork () == 0)			//Código del proceso hijo
+	crearMatrices ((void *)matrizSuma, n);
+	crearMatrices ((void *)matrizMult, n);
+	GenerarMatrices (matriz->m1, matriz->m2, n);
+	//ImprimirMatriz (matriz->m1, 1, n);
+	//ImprimirMatriz (matriz->m2, 2, n);
+	if (pipe (suma) != 0)						//Creamos la tubería para la suma
 	{
-		while (VALOR)
-		{
-			read (desc_arch[0], buffer, sizeof (buffer));		//Posición 0 del descriptor es para lectura
-			printf("Se recibió:\t%s\n", buffer);
-		}
+		exit(1);
 	}
-	while (VALOR)
+	if (pipe (mult) != 0)						//Creamos la tubería para la multiplicación
 	{
-		gets (buffer);							//Leemos del teclado
-		write (desc_arch[1], buffer, strlen (buffer) + 1);		//Posición 1 del descriptor es para escritura
-	}*/
+		exit(1);
+	}
+	if (fork () == 0)
+	{
+		read (suma[0], matriz, sizeof (matrices *));
+		printf("Se recibieron las matrices\n\n\n");
+		ImprimirMatriz (matriz->m1, 1, n);
+		ImprimirMatriz (matriz->m2, 2, n);
+		matriz->m3 = SumaMatrices (matriz->m1, matriz->m2, matriz->m3, n);
+		printf("\nMatriz resultante de la suma que se mandará por la tubería 'suma'\n");
+		ImprimirMatriz (matriz->m3, 3, n);
+		write (suma[1], matriz, sizeof (matrices *));
+	}else
+	{
+		write (suma[1], matriz, sizeof(matrices *));			//Mandamos 2 matrices para sumarlas
+		while(wait(&status)>0);
+		read (suma [0], matriz, sizeof (matrices *));
+		printf("\n\nSe recibió la suma de las matrices que es\n");
+		ImprimirMatriz (matriz->m3, 3, n);
+	}
 }
 
 void crearMatrices (void *args, int n)
@@ -104,4 +115,18 @@ void ImprimirMatriz(int **m1, int x, int n)
 		printf("\n");
 	}
 	return;
+}
+
+int ** SumaMatrices (int **m1, int **m2, int **m3, int n)
+{
+	int i, j;
+	for (i = 0; i < n; i++)
+	{
+		for (j = 0; j < n; j++)
+		{
+			m3[i][j] = m1[i][j] + m2[i][j];
+		}
+	}
+	return m3;
+	//ImprimirMatriz(m3, 3, n);
 }
