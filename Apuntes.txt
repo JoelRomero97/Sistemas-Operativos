@@ -1,0 +1,166 @@
+
+/******************************************COMANDOS******************************************/
+
+mkdir		->		Crear un directorio. (mkdir 'nombreDirectorio')
+rm			->		Eliminar un archivo o directorio. (rm '-r' 'archivo/directorio')
+chmod		->		Sistema de permisos de linux. (propietario, grupo, otros)
+grep		->		Filtrado de información.
+touch		->		Crear un archivo. (touch 'nombreArchivo')
+chown		->		Cambiar de propietario y grupo un archivo. (sudo chown 'usuario':'grupo' 'archivo')
+nano		->		Abrir archivo, escribir en el. (nano 'archivo')
+ls -l		->		Enlistar los permisos.
+gedit		->		Abrir un archivo con gedit. (gedit 'archivo')
+chgrp		->		Cambia el grupo de un archivo. (sudo chgrp 'grupo' 'archivo')
+passwd		->		Cambiar password a usuario. (passwd 'usuario')
+adduser		->		Crear al usuario y especificar un home. (sudo adduser --home 'directorio' 'nombreUsuario')
+useradd		->		Solamente se crea al usuario. (useradd 'usuario')
+who			->		MUestra usuarios conectados.
+su 			->		Cambiar de usuario. (su 'usuario')
+cp 			->		Copiar archivo a una carpeta. (cp 'archivo' 'destino')
+mv			->		Mueve el archivo a una carpeta. (mv 'archivo' 'destino')
+ps 			->		Ver procesos en ejecución. (ps -A)
+kill		->		Enviar señal a un proceso.   (kill -9 para detener ejecución de proceso, kill -hop para reiniciar)
+
+/******************************************COMANDOS DE RED******************************************/
+
+ifconfig	->		Muestra las interfaces de red que tenemos. (ifconfig 'eth0' 'down/up' o ifconfig 'eth0' 'IP' 'Mascara 	de Subred')
+ping		->		Hacer solicitud a maquina remota.
+iwconfig	->		Configurar una red inalámbrica.
+netstat		->		Imprimir las conexiones, tabla de routers, etc.
+nmap		->		Escanea la red y busca que computadoras están conectadas a esa red.
+nslookup	->		Ve los servidores que están interactuando.
+
+/******************************************DIRECTORIOS DE LINUX******************************************/
+
+/			->		Directorio raíz
+/bin		->		Ejecutables de los programas
+/boot		->		Ficheros de arranque del S.O
+/dev		->		Dispositivos del sistema
+/etc		->		Archivos de configuración del sistema
+/home		->		Archivos personales del usuario
+/sbin		->		Binarios del sistema
+/lib		->		Bibliotecas
+/opt		->		Software de usuario
+/proc		-> 		Procesos
+/root		->		Directorio personal de superusuario
+/srv		->		Servicios que se crean al levantar un servidor
+/usr		->		Todos los archivos requeridos para el usuario
+/tmp		->		Archivos temporales del sistema
+/log		->		Backup a nivel sistema
+
+/****************************************SISTEMA DE PERMISOS DE LINUX****************************************/
+
+DUEÑO DEL ARCHIVO
+r		->		Lectura
+w		->		Escritura
+x		->		Ejecución
+
+USUARIOS DEL GRUPO DE TRABAJO DEL DUEÑO
+r		->		Lectura
+w		->		Escritura
+x		->		ejecución
+
+RESTO DE LOS USUARIOS
+r		->		Lectura
+w		->		Escritura
+x		->		Ejecución
+
+/*************************************ENSAMBLAR Y LINKEAR EN ENSAMBLADOR*************************************/
+
+ENSAMBLAR		->		nasm -f elf -o 'nombreArchivo'.o 'nombreArchivo'.asm
+LINKEAR			->		ld -m elf-i386 -o 'nombreEjecutable' 'nombreArchivo.o'
+
+
+/***************************************REGISTROS DE PROPÓSITO GENERAL***************************************/
+
+eax (32 bits)			 ax (16 bits)				ah,al (8 bits)
+ebx (32 bits)			 bx (16 bits)				bh,bl (8 bits)
+ecx (32 bits)			 cx (16 bits)				ch,cl (8 bits)
+edx (32 bits)			 dx (16 bits)				dh,dl (8 bits)
+
+/*************************************************SEGMENTOS*************************************************/
+
+Segmento de datos		->		.data
+Segmento de código		->		.text
+Segmento de pila		->		.stack
+Segmento extra			->		.bss
+
+/******************************************DESEMPAQUETAR ARCHIVOS******************************************/
+
+gzip -d 'nombre_Archivo'.tar.gz
+tar xvf 'nombre_Archivo'.tar
+
+/*********************************TABLA DE DESCRIPTORES DE ARCHIVOS ABIERTOS*********************************/
+
+0		->		Entrada estándar (Teclado)
+1		->		Salida estándar  (Monitor)
+2		->		Manejo de error
+
+/******************************************SSH SERVER******************************************/
+
+* Instalar openssh-server		->		sudo apt-get install openssh-server
+* Verificar el servicio			->		systemctl sshd status
+* ssh usuario@192.168.1.X		->		(PASSWORD DEL USUARIO TECLEADO)
+
+/******************************************OPERACIONES ARITMÉTICAS******************************************/
+
+add 		->		Suma
+sub 		->		Resta
+mul 		-> 		Multiplicación
+div 		->		División
+
+add eax,abx 			->		eax += ebx
+sub eax 				->		eax -= ebx
+
+mul ax = al * fuente	->		Fuente es otro registro
+div ax = al / fuente	->		Fuente es otro registro
+
+dx, ax= ax * fuente		->		La multiplicación se asigna en la parte alta (dx) y en la parte baja (ax)
+dx, ax = ax/fuente		->		El resultado de la división se asigna en la parte alta (dx) y en la parte 									baja (ax) el residuo
+
+/****************************************CREACIÓN DE PROCESOS EN LINUX***************************************/
+
+fork()							->			Creación de proceso por copia exacta de código
+execv()							->			Creación de proceso por sustitución de código
+
+/***************************************CREACIÓN DE PROCESOS EN WINDOWS**************************************/
+
+CreateProcess()					->			Creación de proceso por sustitución de código
+
+/**********************************LLAMADAS AL SISTEMA ASOCIADAS A PROCESOS**********************************/
+
+wait()							->			Llamada al sistema para esperar la terminación de un proceso hijo 												en Linux
+WaitForSingleObject()			->			Llamada al sistema para esperar la terminación de un proceso hijo 												en Windows
+getpid()						->			Llamada al sistema para obtener el identificador del proceso 												quien la invoca en Linux
+getppid()						->			Llamada al sistema para obtener el identificador del proceso 												padre del proceso hijo quien la invoca en Linux
+GetCurrentProcessId()			->			Llamada al sistema para obtener el identificador de un proceso en 												Windows
+
+/**********************************FUNCIONES DE BIBLIOTECA DE HILOS EN LINUX*********************************/
+
+pthread_create()				->			Función para la creación de un hilo
+pthread_join()					->			Función para esperar la terminación de un hilo
+pthread_exit()					->			Función para terminar la ejecución de un hilo
+
+/*********************************LLAMADAS AL SISTEMA PARA HILOS EN WINDOWS*********************************/
+
+CreateThread()					->			Llamada para la creación de un hilo
+WaitForSingleObject()			->			Llamada para esperar la terminación de un hilo
+
+/*****************************PROTOTIPOS DE FUNCIÓN PARA IMPLEMENTACIÓN DE HILOS*****************************/
+
+void * FUNCIÓN_HILO (void *arg);		->			Prototipo para Linux
+DWORD WINAPI FUNCIÓN_HILO (LPVOID arg)	->			Prototipo para WIndows
+
+/******************************LLAMADAS AL SISTEMA PARA CREACIÓN DE TUBERÍAS*****************************/
+
+pipe()			->			Llamada para creación de una tubería en Linux
+CreatePipe()	->			Llamada para creación de una tubería en Windows
+
+/*********************LLAMADAS AL SISTEMA PARA LA CREACIÓN Y ENLACE DE MEMORIA COMPARTIDA********************/
+
+shmget()		->			Llamada para la creación y enlace de memoria compartida.
+shmat()			->			Llamada para el enlace de una memoria compartida a un proceso en Linux.
+CreateFileMapping()		->	Llamada para la creación de una memoria compartida en Windows.
+OpenFileMapping()	->		Llamada para acceder a una memoria compartida en Windows.
+MapViewOfFIle	->			LLamada para el enlace de una memoria compartida a un proceso en Windows.
+
