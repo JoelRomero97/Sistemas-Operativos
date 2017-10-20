@@ -19,7 +19,7 @@ int main (void)
 									FILE_MAP_ALL_ACCESS,			//Permiso de lectura y escritura dentro de la memoria compartida
 									0,
 									0,
-									TAM_MEMORIA)					//Tamaño de la memoria en bytes) 
+									TAM_MEMORIA)					//Tamaño de la memoria en bytes
 									)== NULL)
 	{
 		printf("No se accedio correctamente a la memoria compartida (%i)\n", GetLastError ());
