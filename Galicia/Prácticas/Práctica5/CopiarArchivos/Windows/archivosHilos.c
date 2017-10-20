@@ -32,9 +32,9 @@ typedef struct Directorios     //Definimos la estructura de argumentos para la f
 int main (int argc, char **argv)
 {
   system("cls");
-	DWORD idHilo;		              //Identificador del hilo
+  DWORD idHilo;		              //Identificador del hilo
   HANDLE manHilo;                 //Manejador del hilo
-	directorios * dir = (directorios *) malloc (sizeof (directorios));
+  directorios * dir = (directorios *) malloc (sizeof (directorios));
   printf ("Ejemplo de ruta: /Users/NombreUsuario/Desktop/CarpetaACopiar\n\n");
   printf ("Ingresa la ruta donde se encuentran los archivos a copiar:\t");
   scanf ("%s", dir->origen);
